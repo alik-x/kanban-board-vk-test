@@ -1,6 +1,7 @@
 # kanban-board-vk-test
 
 > Figma layout: [vk.cc/9jpmLH](https://vk.cc/9jpmLH)
+
 > Demo: [kanban-board](https://alik-x.github.io/kanban-board-vk-test/)
 
 ### Project setup
