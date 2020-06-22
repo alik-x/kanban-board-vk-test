@@ -1,20 +1,20 @@
 <template>
   <div id="app" v-cloak>
-    <div class="board" ref="board">
+    <div class="board board_no-select" ref="board">
       <Column
         v-for="column in columns"
         :key="column.id"
         :column="column"
         @insertCard="insertCard"
-        @draggedHandler="saveToLocalStorage"
+        @updateCards="updateCards"
       />
-      <Column v-if="isFormActive" :isEmpty="true">
+      <Column v-if="isFormActive">
         <AddForm :forColumn="true" @onSubmit="insertColumn" @onCancel="isFormActive = false" />
       </Column>
-      <Column :isEmpty="true">
-        <TriggerBtn @click.native="activateForm">
+      <Column>
+        <AddButton @click.native="activateForm">
           Добавить {{ columns.length ? 'еще одну ' : '' }}колонку
-        </TriggerBtn>
+        </AddButton>
       </Column>
     </div>
   </div>
@@ -22,12 +22,12 @@
 
 <script>
 import Column from '@/components/Column.vue'
-import TriggerBtn from '@/components/TriggerBtn.vue'
+import AddButton from '@/components/AddButton.vue'
 import AddForm from '@/components/AddForm.vue'
 
 export default {
   name: 'App',
-  components: { Column, TriggerBtn, AddForm },
+  components: { Column, AddButton, AddForm },
   data() {
     return {
       columns: [],
@@ -52,6 +52,11 @@ export default {
       })
       this.saveToLocalStorage()
     },
+    updateCards({ idColumn, cards }) {
+      const idx = this.columns.findIndex(c => c.id === idColumn)
+      this.columns[idx].cards = cards
+      this.saveToLocalStorage()
+    },
     saveToLocalStorage() {
       localStorage.setItem('kanbanBoardColumns', JSON.stringify(this.columns))
     },
@@ -69,8 +74,8 @@ export default {
 }
 </script>
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+<style lang="scss">
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
 
 [v-cloak] {
   display: none;
@@ -102,22 +107,30 @@ body {
 .board {
   display: flex;
   align-items: flex-start;
+  width: 100%;
   height: 100%;
+  padding: 20px;
   overflow-x: overlay;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
 
-.board::-webkit-scrollbar {
-  height: 5px;
-}
-
-.board::-webkit-scrollbar-thumb {
-  background: #a0a0a0;
-  border-radius: 5px;
+  &_no-select {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  &::after {
+    content: ' ';
+    min-width: 20px;
+    height: 100%;
+  }
+  &::-webkit-scrollbar {
+    height: 5px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #a0a0a0;
+    border-radius: 5px;
+  }
 }
 </style>
